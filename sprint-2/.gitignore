@@ -1,0 +1,55 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Compiled binary dependencies
+target/
+bin/
+
+# Spring Boot DevTools
+.restart
+
+# Application properties
+application.properties
+application.yml
+*.properties
+*.yml
+
+# Test coverage reports
+target/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+*.iws
+*.ipr
+*.iml
+.idea/
+out/
+*.class
+*.log
+*.tld
+*.diff
+*.swp
+*.bak
+*.orig
+*.tmp
+*.patch
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
