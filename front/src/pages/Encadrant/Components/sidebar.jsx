@@ -28,7 +28,7 @@ const Sidebar = () => {
             </div>
           </div>
           <ul>
-            <NavLink to="/encadrant/dashboard" className="ml-4 text-sm font-medium">
+            <NavLink to="/encadrant" className="ml-4 text-sm font-medium">
               <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
                 <LuMenu className="text-lg" />
                 Dashboard

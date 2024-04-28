@@ -41,14 +41,14 @@ function App() {
         },
         {
           path: "etudiant",
-          element: <ProtectedRoute roleRequired="CANDIDAT" />,
+          //element: <ProtectedRoute roleRequired="CANDIDAT" />,
           children: [
             {
               path: "",
               element: <Etudiant />,
               children: [
                 { path: "dashboard", element: <EtudiantDashboard /> },
-                { path: "avancement", element: <Avancement /> }
+                { path: "", element: <Avancement /> }
               ],
             }
           ],
@@ -56,7 +56,7 @@ function App() {
         {
           path:"encadrant", element: <Encadrant />,
           children: [
-            { path: "dashboard", element: <EncadrantDashboard /> },
+            { path: "", element: <EncadrantDashboard /> },
           ],
         }
       ],
