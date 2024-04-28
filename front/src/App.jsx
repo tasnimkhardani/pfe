@@ -9,10 +9,11 @@ import EtudiantDashboard from "./pages/Etudiant/Components/dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ManageUsers from "./pages/Admin/Components/manage-users";
 import GestionSujet from "./pages/Admin/Components/gestion-sujet";
-import Contact from "./pages/contact/contact";
-import Blog from "./pages/blog/blog";
 import AjouterUser from "./pages/Admin/Components/ajouter-user"
 import AjouterSujet from "./pages/Admin/Components/ajouter-sujet";
+import Avancement from "./pages/Etudiant/Components/avancement";
+import Encadrant from "./pages/Encadrant/encadrant";
+import EncadrantDashboard from "./pages/Encadrant/Components/dashboard";
 function App() {
   const router = createBrowserRouter([
     {
@@ -21,8 +22,6 @@ function App() {
         { path: "/", element: <Home /> },
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> }, 
-        { path: "contact", element: <Contact /> },
-        { path: "blog", element: <Blog /> },
         {
           path: "admin",
           element: <ProtectedRoute roleRequired="ADMIN" />,
@@ -48,11 +47,18 @@ function App() {
               path: "",
               element: <Etudiant />,
               children: [
-                { path: "dashboard", element: <EtudiantDashboard /> }
+                { path: "dashboard", element: <EtudiantDashboard /> },
+                { path: "avancement", element: <Avancement /> }
               ],
             }
           ],
         },
+        {
+          path:"encadrant", element: <Encadrant />,
+          children: [
+            { path: "dashboard", element: <EncadrantDashboard /> },
+          ],
+        }
       ],
     },
   ]);

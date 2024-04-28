@@ -1,7 +1,9 @@
 const EtudiantDashboard = () => {
     return ( 
-        <div className="bg-red-100">
+        <div className="">
             this is the dashboard page
+             <br />
+            can have user inf here !
         </div>
      );
 }
