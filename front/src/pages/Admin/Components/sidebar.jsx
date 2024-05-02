@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/actions/authActions';
 import { NavLink } from 'react-router-dom';
 
+import { MdOutlineAssignmentInd } from "react-icons/md";
+import { PiStudentFill } from "react-icons/pi";
 const Sidebar = () => {
 
   const dispatch = useDispatch();
@@ -40,7 +42,22 @@ const Sidebar = () => {
             </li>
           </NavLink>
         </ul>
-
+        <ul>
+            <NavLink to="/admin/candidats" className="ml-4 text-sm font-medium">
+              <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+                <MdOutlineAssignmentInd className="text-lg" />
+                Candidats Stagiaires
+              </li>
+            </NavLink>
+          </ul>
+          <ul>
+            <NavLink to="/admin/stagaire" className="ml-4 text-sm font-medium">
+              <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+                <PiStudentFill className="text-lg" />
+                Stagiaires Acceptes
+              </li>
+            </NavLink>
+          </ul>
         <Link to="/" onClick={handleLogout} className=" absolute bottom-5 flex items-center text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
           <AiOutlineLogout className="text-lg" />
           <span className="ml-4 text-sm font-medium">Logout</span>

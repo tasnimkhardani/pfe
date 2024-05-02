@@ -3,7 +3,7 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import { Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/actions/authActions';
-import { LuMenu } from "react-icons/lu";
+import { DiScrum } from "react-icons/di";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -30,11 +30,12 @@ const Sidebar = () => {
           <ul>
             <NavLink to="/encadrant" className="ml-4 text-sm font-medium">
               <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
-                <LuMenu className="text-lg" />
-                Dashboard
+                <DiScrum className="text-lg" />
+                Sprint
               </li>
             </NavLink>
           </ul>
+     
         </div>
         <div>
           <Link to="/" onClick={handleLogout} className="flex items-center justify-start text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md w-full">

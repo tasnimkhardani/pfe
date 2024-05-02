@@ -13,7 +13,10 @@ import AjouterUser from "./pages/Admin/Components/ajouter-user"
 import AjouterSujet from "./pages/Admin/Components/ajouter-sujet";
 import Avancement from "./pages/Etudiant/Components/avancement";
 import Encadrant from "./pages/Encadrant/encadrant";
+import Sujet from "./pages/Sujet/sujet";
 import EncadrantDashboard from "./pages/Encadrant/Components/dashboard";
+import Candidat from "./pages/Admin/Components/candidat";
+import StagiairesAcceptes from "./pages/Admin/Components/stagaire";
 function App() {
   const router = createBrowserRouter([
     {
@@ -34,7 +37,9 @@ function App() {
                 { path: "manage-users", element: <ManageUsers />},
                 { path: "gestion-sujet", element: <GestionSujet />},
                 { path: "ajouter-user", element : <AjouterUser />},
-                { path: "ajouter-sujet", element : <AjouterSujet />}
+                { path: "ajouter-sujet", element : <AjouterSujet />},
+                { path: "candidats", element: <Candidat /> },
+                { path: "stagaire", element: <StagiairesAcceptes />}
               ],
             }
           ],
@@ -58,7 +63,8 @@ function App() {
           children: [
             { path: "", element: <EncadrantDashboard /> },
           ],
-        }
+        },
+        { path:"sujet/:id", element: <Sujet />}
       ],
     },
   ]);
