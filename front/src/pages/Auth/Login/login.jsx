@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../redux/actions/authActions';
+import Header from '../../Home/Components/header';
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [error,setError] = useState('')
+    const [error, setError] = useState('')
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -29,24 +30,16 @@ const Login = () => {
                     password
                 },
             );
-
-            console.log(response.data)
-
-
-            if (response.data ) {
+            if (response.data) {
                 dispatch(loginSuccess(response.data));
                 switch (response.data.user.role) {
                     case 'ADMIN':
-                      navigate('/admin/dashboard');
-                      break;
+                        navigate('/admin/dashboard');
+                        break;
                     case 'CANDIDAT':
-                      navigate('/etudiant/dashboard');
-                      break;
-                  
-                    
-                  }
-                
-
+                        navigate('/etudiant/dashboard');
+                        break;
+                }
             }
         } catch (error) {
             console.log("🚀 ~ handleLogin ~ error:", error.response.data)
@@ -56,7 +49,14 @@ const Login = () => {
 
 
     return (
-        <div className="bg-gray-100 min-h-screen flex items-center justify-between md:px-28  ">
+        <div className='flex flex-col '>
+           <header className="flex items-center justify-between px-10 border-1 border-b p-4">
+            <Link to='/'>
+                <h1 className='text-3xl font-bold bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text'>Itech Data</h1>
+            </Link>
+            
+        </header>
+              <div className="bg-gray-100 min-h-screen flex items-center justify-between md:px-28  ">
             <img src="login-img.png" alt="" className="hidden md:block w-1/3" />
             <div className="m-2 max-w-md w-full space-y-8 p-8 shadow-md rounded-2xl bg-white">
                 <div>
@@ -93,6 +93,7 @@ const Login = () => {
                         </p>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
     );

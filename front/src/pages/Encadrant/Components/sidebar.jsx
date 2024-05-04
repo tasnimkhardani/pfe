@@ -28,14 +28,21 @@ const Sidebar = () => {
             </div>
           </div>
           <ul>
-            <NavLink to="/encadrant" className="ml-4 text-sm font-medium">
+            <NavLink to="/encadrant/stage/1" className="ml-4 text-sm font-medium">
               <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
                 <DiScrum className="text-lg" />
-                Sprint
+                Stage Mern
               </li>
             </NavLink>
           </ul>
-     
+          <ul>
+            <NavLink to="/encadrant/stage/2" className="ml-4 text-sm font-medium">
+              <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+                <DiScrum className="text-lg" />
+                Stage Devops
+              </li>
+            </NavLink>
+          </ul>
         </div>
         <div>
           <Link to="/" onClick={handleLogout} className="flex items-center justify-start text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md w-full">

@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
-const mockInternships = [
-  { id: 1, title: "Développeur Front-End", company: "Tech Innovate", location: "Paris, France" },
-  { id: 2, title: "Analyste de Données", company: "DataWiz", location: "Lyon, France" },
-  { id: 3, title: "Ingénieur Logiciel", company: "CodeCraft", location: "Marseille, France" },
-  // Add more mock data as needed
-];
 
 const Stage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,7 +31,7 @@ const Stage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8" >
+    <div className="container mx-auto px-20 py-8" >
       <div className="mb-4">
         <input
           type="text"

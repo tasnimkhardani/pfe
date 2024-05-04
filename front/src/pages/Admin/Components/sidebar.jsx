@@ -27,10 +27,10 @@ const Sidebar = () => {
           </div>
         </div>
         <ul className="mt-6">
-          <NavLink to="/admin/manage-users" className="ml-4 text-sm font-medium">
+          <NavLink to="/admin/gestion-users" className="ml-4 text-sm font-medium">
             <li className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
               <AiOutlineUser className="text-lg" />
-              Manage Users
+              Gestion Users 
             </li>
           </NavLink>
         </ul>
