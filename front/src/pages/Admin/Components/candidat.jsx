@@ -1,31 +1,51 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../../../../axios-instance';
+import Toast from 'react-hot-toast';
 
 const Candidat = () => {
-    const [candidates] = useState([
-        { id: 1, nom: 'Alice Dupont', email: 'alice.dupont@example.com', telephone: '0123456789', stage: 'Développeur Web' },
-        { id: 3, nom: 'Clara Lefevre', email: 'clara.lefevre@example.com', telephone: '0123456790', stage: 'Développeur Web' },
-        { id: 1, nom: 'Alice Dupont', email: 'alice.dupont@example.com', telephone: '0123456789', stage: 'Devops' },
+    const [candidates, setCandidates] = useState([]);
 
-        { id: 2, nom: 'Bob Martin', email: 'bob.martin@example.com', telephone: '0123456788', stage: 'Analyste de données' },
-        { id: 3, nom: 'Clara Lefevre', email: 'clara.lefevre@example.com', telephone: '0123456790', stage: 'Designer UI/UX' },
-        
-    ]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:8080/candidature/all');
+                const transformedCandidates = response.data.map(cand => ({
+                    id: cand.idCandidatures,
+                    nom: `${cand.user.prenom} ${cand.user.nom}`,
+                    email: cand.user.email,
+                    telephone: cand.user.telephone,
+                    stage: cand.sujet.titre
+                }));
+                setCandidates(transformedCandidates);
+            } catch (error) {
+                Toast.error('Erreur lors de la récupération des candidatures: ' + error.message);
+            }
+        };
+        fetchData();
+    }, []);
 
-    const handleAccept = (id) => {
-        console.log('Accepté:', id);
-        // Here you can add logic to process the acceptance
+    const handleAccept = async (id) => {
+        try {
+            await axiosInstance.put(`http://localhost:8080/candidature/accepter/${id}`);
+            Toast.success(`Candidature ${id} acceptée.`);
+        } catch (error) {
+            Toast.error(`Erreur lors de l'acceptation de la candidature ${id}: ${error.message}`);
+        }
     };
 
-    const handleRefuse = (id) => {
-        console.log('Refusé:', id);
-        // Here you can add logic to process the refusal
+    const handleRefuse = async (id) => {
+        try {
+            await axiosInstance.put(`http://localhost:8080/candidature/rejeter/${id}`);
+            Toast.success(`Candidature ${id} refusée.`);
+        } catch (error) {
+            Toast.error(`Erreur lors du refus de la candidature ${id}: ${error.message}`);
+        }
     };
 
     return (  
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
             <h1 className="text-3xl font-bold leading-tight text-gray-900">Liste des Candidats au Stage</h1>
             
-            {/* List of candidates */}
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-800 text-white">

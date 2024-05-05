@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,22 +82,24 @@ public class CandidatureController {
             return ResponseEntity.status(500).body("Échec de la récupération de toutes les candidatures : " + e.getMessage());
         }
     }
-    @PostMapping("/candidature/encadrant")
-    public ResponseEntity<String> AssocierEncadrant(@RequestParam("Encadrant_Id") Long encadrantID,
-            @RequestParam("Intern_Id") Long internID
-            ) {
-       try{
-           candidatureService.AssocierEncadrant(encadrantID,internID);
-           return ResponseEntity.ok().body("succès");
-       }
-       catch (Exception e){
-           return ResponseEntity.status(500).body("Échec d'associer l'encadrant au sujet ");
-       }
-
-
-
-
-
+    @GetMapping("/candidature/accepete")
+    public ResponseEntity<?> getAllCandidaturesAccepte() {
+        try {
+            List<Candidatures> candidaturesList = candidatureService.getAcceptedCandidatures();
+            return ResponseEntity.ok(candidaturesList);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Échec de la récupération de toutes les candidatures : " + e.getMessage());
+        }
     }
+    @PostMapping("/candidature/encadrant")
+    public ResponseEntity<String> AssocierEncadrant(@RequestBody Map<String, Long> ids) {
+        try {
+            candidatureService.AssocierEncadrant(ids.get("Encadrant_Id"), ids.get("Intern_Id"));
+            return ResponseEntity.ok().body("succès");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Échec d'associer l'encadrant au sujet");
+        }
+    }
+
 
 }

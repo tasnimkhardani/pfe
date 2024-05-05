@@ -15,6 +15,8 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
     Long findUserIdBySujetCandidatId(@Param("CandidatureId") Long CandidatureId);
     @Query("SELECT cs FROM Candidature cs WHERE cs.statut = 'ATTENTE'")
     List<Candidature> findAllByStatutAttente();
+    @Query("SELECT cs FROM Candidature cs WHERE cs.statut = 'ACCEPTE'")
+    List<Candidature> findAllByStatutAccepter();
     boolean existsByCandidatAndSujet(User candidat, Sujet sujet);
 
 }

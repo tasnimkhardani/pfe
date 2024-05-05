@@ -12,4 +12,5 @@ public class Candidatures {
     User user;
     Sujet sujet;
 
+
 }

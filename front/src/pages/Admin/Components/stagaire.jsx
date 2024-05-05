@@ -1,26 +1,33 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import axiosInstance from '../../../../axios-instance';
 const StagiairesAcceptes = () => {
-    const [interns, setInterns] = useState([
-        { id: 1, nom: 'Alice Dupont', email: 'alice.dupont@example.com', telephone: '0123456789', supervisor: '1' },
-        { id: 2, nom: 'Bob Martin', email: 'bob.martin@example.com', telephone: '0123456788', supervisor: '3' },
-        { id: 3, nom: 'Clara Lefevre', email: 'clara.lefevre@example.com', telephone: '0123456790', supervisor: '' },
-        { id: 4, nom: 'David Évrard', email: 'david.evrard@example.com', telephone: '0123456791', supervisor: '2' },
-        { id: 5, nom: 'Émilie Petit', email: 'emilie.petit@example.com', telephone: '0123456792', supervisor: '' },
-        { id: 6, nom: 'François Rousset', email: 'francois.rousset@example.com', telephone: '0123456793', supervisor: '' }
-    ]);
+    const [interns, setInterns] = useState([]);
+    const [supervisors, setSupervisors] = useState([]);
 
-    const [supervisors] = useState([
-        { id: 1, name: 'Monsieur Durand' },
-        { id: 2, name: 'Madame Smith' },
-        { id: 3, name: 'Monsieur Lee' }
-    ]);
+    useEffect(() => {
+        // Fetching accepted interns
+        axiosInstance.get('candidature/accepete')
+            .then(response => setInterns(response.data))
+            .catch(error => console.error('Failed to fetch interns', error));
+
+        // Fetching supervisors
+        axiosInstance.get('encadrants')
+            .then(response => setSupervisors(response.data))
+            .catch(error => console.error('Failed to fetch supervisors', error));
+    }, []);
 
     const handleSupervisorChange = (internId, supervisorId) => {
-        const updatedInterns = interns.map(intern => 
-            intern.id === internId ? { ...intern, supervisor: supervisorId } : intern
-        );
-        setInterns(updatedInterns);
+        axiosInstance.post('candidature/encadrant', {
+            Encadrant_Id: supervisorId,
+            Intern_Id: internId
+        })
+        .then(() => {
+            const updatedInterns = interns.map(intern =>
+                intern.idCandidatures === internId ? { ...intern, supervisor: supervisorId } : intern
+            );
+            setInterns(updatedInterns);
+        })
+        .catch(error => console.error('Failed to assign supervisor', error));
     };
 
     return (
@@ -40,19 +47,19 @@ const StagiairesAcceptes = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {interns.map((intern) => (
-                            <tr key={intern.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{intern.nom}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.telephone}</td>
+                            <tr key={intern.idCandidatures}>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{intern.user.nom}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.user.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.user.telephone}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <select
-                                        value={intern.supervisor}
-                                        onChange={(e) => handleSupervisorChange(intern.id, e.target.value)}
+                                        value={intern.supervisor || ''}
+                                        onChange={(e) => handleSupervisorChange(intern.idCandidatures, e.target.value)}
                                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                     >
                                         <option value="">Assigner un superviseur</option>
                                         {supervisors.map((supervisor) => (
-                                            <option key={supervisor.id} value={supervisor.id}>{supervisor.name}</option>
+                                            <option key={supervisor.id} value={supervisor.id}>{supervisor.nom}</option>
                                         ))}
                                     </select>
                                 </td>

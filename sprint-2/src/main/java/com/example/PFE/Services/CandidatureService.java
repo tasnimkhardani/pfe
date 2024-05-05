@@ -117,6 +117,30 @@ public class CandidatureService {
 
         return candidaturesList;
     }
+
+    public List<Candidatures> getAcceptedCandidatures() {
+        List<Candidature> sujetCandidats = candidatSujetRepository.findAllByStatutAccepter();
+        List<Candidatures> candidaturesList = new ArrayList<>();
+
+        for (Candidature sujetCandidat : sujetCandidats) {
+            if(sujetCandidat.getStatut()==Statut.ACCEPTE){
+                Long userId = sujetCandidat.getCandidat().getId();
+                Long sujetId = sujetCandidat.getSujet().getId();
+                Long id=sujetCandidat.getId();
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+                Sujet sujet = sujetRepository.findById(sujetId)
+                        .orElseThrow(() -> new RuntimeException("Sujet not found with id: " + sujetId));
+
+                Candidatures candidatures = new Candidatures(id,user, sujet);
+                candidaturesList.add(candidatures);
+            }
+
+        }
+
+        return candidaturesList;
+    }
     public void AssocierEncadrant( Long Id_Encadrant,Long id_INTERN){
         Optional<User> Encadrant=userRepository.findById(Id_Encadrant);
         Optional<Avancement> avancement=avancementRepository.findByIntern_Id(id_INTERN);

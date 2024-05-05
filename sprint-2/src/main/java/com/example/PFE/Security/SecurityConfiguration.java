@@ -38,6 +38,8 @@ public class SecurityConfiguration {
                     request.requestMatchers("/user/update","user/changePassword").hasAnyAuthority("CANDIDAT","ADMIN","INTERN","PROF_SUPPERVISOR");
                     request.requestMatchers("/sujet/**","/users/**","/user/delete/{userId}","/user/update/{userId}","/candidature/**").hasAnyAuthority( "ADMIN");
                     request.requestMatchers("/postuler").hasAnyAuthority( "CANDIDAT");
+                    request.requestMatchers("/encadrants").hasAnyAuthority( "ADMIN");
+                    request.requestMatchers("candidature/encadrant").hasAnyAuthority( "ADMIN");
                     request.requestMatchers("/sujet/**","/users/**","/user/delete/{userId}","/user/update").hasAnyAuthority( "INTERN");
                     request.requestMatchers("/avancements").hasAnyAuthority( "PROF_SUPERVISOR");
                     request.requestMatchers("/commentaire/**","/document/**","/task/**").hasAnyAuthority( "PROF_SUPERVISOR","INTERN");
