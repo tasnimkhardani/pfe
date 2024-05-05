@@ -2,12 +2,15 @@ package com.example.PFE.Services;
 
 import com.example.PFE.Auth.Token.VerificationToken;
 import com.example.PFE.Auth.Token.VerificationTokenRepository;
+import com.example.PFE.Entities.ChangePasswordRequest;
 import com.example.PFE.Entities.User;
 import com.example.PFE.Repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -64,13 +67,9 @@ public class UserService implements IUserService {
             if (newUserDetails.getEmail() != null) {
                 user.setEmail(newUserDetails.getEmail());
             }
-            if (newUserDetails.getPassword() != null) {
-                user.setPassword(newUserDetails.getPassword());
-            }
             if (newUserDetails.getTelephone() != null) {
                 user.setTelephone(newUserDetails.getTelephone());
             }
-
 
 
 
@@ -78,6 +77,40 @@ public class UserService implements IUserService {
         } else {
             throw new RuntimeException("Utilisateur non trouvé avec l'identifiant : " + userId);
         }
+    }
+    public User update(Principal connectedUser, User newUserDetails) {
+        var user = (User)((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        if (newUserDetails.getNom() != null) {
+            user.setNom(newUserDetails.getNom());
+        }
+        if (newUserDetails.getPrenom() != null) {
+            user.setPrenom(newUserDetails.getPrenom());
+        }
+        if (newUserDetails.getEmail() != null) {
+            user.setEmail(newUserDetails.getEmail());
+        }
+        if (newUserDetails.getTelephone() != null) {
+            user.setTelephone(newUserDetails.getTelephone());
+        }
+
+
+        return userRepository.save(user);
+    }
+    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+
+        var user = (User)((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
     }
 
 }

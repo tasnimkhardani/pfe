@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
-
+    // sprint 1
     private final AuthenticationService authenticationService;
     private final ApplicationEventPublisher publisher;
     private final VerificationTokenRepository tokenRepository;

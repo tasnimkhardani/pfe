@@ -1,12 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Header from "../Home/Components/header";
 import { useSelector } from "react-redux";
-
+import axiosInstance from "../../../axios-instance";
+import Toast from "react-hot-toast";
+import axios from "axios";
 const Sujet = () => {
     const token = useSelector(state => state.auth.user.access_token);
-    const role = useSelector(state => state.auth.user.role);
+    
+    const role = useSelector(state => state.auth.user.user.role);
     const { id } = useParams();
     const [sujet, setSujet] = useState({});
     const [cvFile, setCvFile] = useState(null);
@@ -17,7 +19,7 @@ const Sujet = () => {
 
     async function getSujetById() {
         try {
-            const res = await axios.get(`http://localhost:8080/sujet/get/${id}`);
+            const res = await axiosInstance.get(`sujet/get/${id}`);
             setSujet(res.data);
         } catch (error) {
             console.log(error);
@@ -26,27 +28,28 @@ const Sujet = () => {
 
     const handleFileChange = (e) => {
         setCvFile(e.target.files[0]);
+        console.log(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const data = new FormData();
         data.append('sujetID', id);
-        data.append('cv', cvFile);
-
+        data.append('CV', cvFile);
+        console.log(data);
         try {
-            await axios.post('http://localhost:8080/postuler', data, {
+            await axiosInstance.post('postuler', data, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            alert('CV soumis avec succès !');
+            Toast.success('CV soumis avec succès !');
         } catch (error) {
             console.error('Erreur lors de la soumission du CV:', error);
         }
     };
+    
 
     return (
         <div className="w-full">

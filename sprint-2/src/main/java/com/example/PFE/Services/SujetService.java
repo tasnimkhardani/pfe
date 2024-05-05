@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
-public class SujetService  {
+public class SujetService {
     @Autowired
     private SujetRepository sujetRepository;
 
@@ -18,14 +19,18 @@ public class SujetService  {
     public Sujet updateSujet(Long id, Sujet sujet) {
         Sujet existingSujet = sujetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sujet non trouvé"));
-
-        existingSujet.setTitre(sujet.getTitre());
-        existingSujet.setDescription(sujet.getDescription());
-
+        if(sujet.getTitre()!=null) {
+            existingSujet.setTitre(sujet.getTitre());
+        }
+        if(sujet.getDescription()!=null) {
+            existingSujet.setDescription(sujet.getDescription());
+        }
         return sujetRepository.save(existingSujet);
     }
 
-
+    public void deleteSujet(Long id) {
+        sujetRepository.deleteById(id);
+    }
 
     public Sujet getSujetById(Long id) {
         return sujetRepository.findById(id)

@@ -43,8 +43,8 @@ public class AuthenticationService {
                 .isEnabled(true)
                 .build();
 
-        // Save the new user to get its ID
         newUser = userRepository.save(newUser);
+
 
 
         return newUser;

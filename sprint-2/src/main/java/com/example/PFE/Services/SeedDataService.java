@@ -18,16 +18,20 @@ public class SeedDataService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        var newUser  = User.builder()
-                .isEnabled(true)
-                .nom("Tassnim")
-                .prenom("Tassnim")
-                .email("Tassnim")
-                .telephone("123456")
-                .password(passwordEncoder.encode("123456"))
-                .role(Role.valueOf("ADMIN"))
-                .build();
-        userRepository.save(newUser);
+        if (userRepository.findByEmail("Tassnim").isEmpty()) {
+            var newUser  = User.builder()
+                    .isEnabled(true)
+                    .nom("Tassnim")
+                    .prenom("Tassnim")
+                    .email("Tassnim")
+                    .telephone("123456")
+                    .password(passwordEncoder.encode("123456"))
+                    .role(Role.ADMIN) // Directly using Role.ADMIN instead of Role.valueOf("ADMIN")
+                    .build();
+            userRepository.save(newUser);
+        } else {
+            System.out.println("User with email 'Tassnim' already exists. Skipping seed data.");
+        }
 
     }
 }

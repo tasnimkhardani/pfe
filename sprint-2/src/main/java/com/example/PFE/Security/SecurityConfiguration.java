@@ -34,9 +34,15 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/register/**").permitAll();
                     request.requestMatchers("/authenticate").permitAll();
-                    request.requestMatchers("/sujets/all").permitAll();
-                    request.requestMatchers("/user/update/{userId}").hasAnyAuthority("CANDIDAT","ADMIN","INTERN","ACAD_SUPERVISOR","PROF_SUPPERVISOR");
-                    request.requestMatchers("/sujet/**","/users/**","/user/delete/{userId}").hasAnyAuthority( "ADMIN");
+                    request.requestMatchers("/sujets/all","/sujet/get/{id}").permitAll();
+                    request.requestMatchers("/user/update","user/changePassword").hasAnyAuthority("CANDIDAT","ADMIN","INTERN","PROF_SUPPERVISOR");
+                    request.requestMatchers("/sujet/**","/users/**","/user/delete/{userId}","/user/update/{userId}","/candidature/**").hasAnyAuthority( "ADMIN");
+                    request.requestMatchers("/postuler").hasAnyAuthority( "CANDIDAT");
+                    request.requestMatchers("/sujet/**","/users/**","/user/delete/{userId}","/user/update").hasAnyAuthority( "INTERN");
+                    request.requestMatchers("/avancements").hasAnyAuthority( "PROF_SUPERVISOR");
+                    request.requestMatchers("/commentaire/**","/document/**","/task/**").hasAnyAuthority( "PROF_SUPERVISOR","INTERN");
+
+
 
 
                 }).sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
