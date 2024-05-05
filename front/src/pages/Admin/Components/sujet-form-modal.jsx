@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-
+import axiosInstance from '../../../../axios-instance';
 const SujetFormModal = ({ sujet, closeModal, setSujets, editMode, token }) => {
     const [titre, setTitre] = useState('');
     const [description, setDescription] = useState('');
@@ -15,15 +15,12 @@ const SujetFormModal = ({ sujet, closeModal, setSujets, editMode, token }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const url = editMode ? `http://localhost:8080/sujet/update/${sujet.id}` : 'http://localhost:8080/sujet/create';
+        const url = editMode ? `sujet/update/${sujet.id}` : 'sujet/create';
         const method = editMode ? 'put' : 'post';
         try {
-            const response = await axios({
+            const response = await axiosInstance({
                 method: method,
                 url: url,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
                 data: {
                     titre,
                     description

@@ -19,7 +19,9 @@ const Sidebar = () => {
   return (
     <div className="hidden md:w-64 md:block  bg-gray-900 text-gray-200">
       <div className="py-10 px-4  ">
-        <h1 className='text-3xl text-center font-bold bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text'>Itech Data</h1>
+        <Link to="/">
+          <h1 className='text-3xl text-center font-bold bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text'>Itech Data</h1>
+        </Link>
         
         <div className="flex items-center justify-center flex-col gap-4 p-8 ">
           <img src="/images/user.jpg" alt="user" className=' h-16 w-16 rounded-full' />

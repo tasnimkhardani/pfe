@@ -1,9 +1,8 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import SujetFormModal from './sujet-form-modal';
-
+import axiosInstance from '../../../../axios-instance';
 export default function GestionSujet() {
     const token = useSelector(state => state.auth.user.access_token);
     const [sujets, setSujets] = useState([]);
@@ -14,11 +13,7 @@ export default function GestionSujet() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await axios.get("http://localhost:8080/sujets/all", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const result = await axiosInstance.get("sujets/all");
                 setSujets(result.data);
             } catch (error) {
                 console.error('Échec du chargement des sujets', error);
@@ -31,11 +26,7 @@ export default function GestionSujet() {
 
     const handleDelete = async id => {
         try {
-            const res = await axios.delete(`http://localhost:8080/sujet/delete/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const res = await axiosInstance.delete(`sujet/delete/${id}`);
             if (res.status === 200) {
                 setSujets(prevSujets => prevSujets.filter(sujet => sujet.id !== id));
                 toast.success('Sujet supprimé avec succès');
