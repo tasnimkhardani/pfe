@@ -29,7 +29,22 @@ const StagiairesAcceptes = () => {
         })
         .catch(error => console.error('Failed to assign supervisor', error));
     };
-
+    const handleDownloadCV = async (fileId) => {
+        try {
+            const response = await axiosInstance.get(`http://localhost:8080/candidature/download/${fileId}`, {
+                responseType: 'blob', // Important pour traiter les données binaires du fichier
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `CV_${fileId}.pdf`); // Nom du fichier à télécharger
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            Toast.error('Erreur lors du téléchargement du CV: ' + error.message);
+        }
+    };
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
             <h1 className="text-3xl font-bold leading-tight text-gray-900">Stagiaires Acceptés</h1>
@@ -42,6 +57,8 @@ const StagiairesAcceptes = () => {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nom</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Téléphone</th>
+                            <th scope='col' className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider'>Stage</th> 
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">CV</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Superviseur</th>
                         </tr>
                     </thead>
@@ -51,6 +68,10 @@ const StagiairesAcceptes = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{intern.user.nom}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.user.email}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.user.telephone}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{intern.sujet.titre}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <button onClick={() => handleDownloadCV(intern.fileId)} className="text-blue-600 hover:text-blue-800">Télécharger CV</button>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <select
                                         value={intern.supervisor || ''}

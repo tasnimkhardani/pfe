@@ -14,7 +14,8 @@ const Candidat = () => {
                     nom: `${cand.user.prenom} ${cand.user.nom}`,
                     email: cand.user.email,
                     telephone: cand.user.telephone,
-                    stage: cand.sujet.titre
+                    stage: cand.sujet.titre,
+                    file: cand.fileId
                 }));
                 setCandidates(transformedCandidates);
             } catch (error) {
@@ -24,6 +25,22 @@ const Candidat = () => {
         fetchData();
     }, []);
 
+    const handleDownloadCV = async (fileId) => {
+        try {
+            const response = await axiosInstance.get(`http://localhost:8080/candidature/download/${fileId}`, {
+                responseType: 'blob', // Important pour traiter les données binaires du fichier
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `CV_${fileId}.pdf`); // Nom du fichier à télécharger
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            Toast.error('Erreur lors du téléchargement du CV: ' + error.message);
+        }
+    };
     const handleAccept = async (id) => {
         try {
             await axiosInstance.put(`http://localhost:8080/candidature/accepter/${id}`);
@@ -54,6 +71,7 @@ const Candidat = () => {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Téléphone</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Stage</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">CV</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -64,6 +82,9 @@ const Candidat = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{candidate.email}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{candidate.telephone}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{candidate.stage}</td>
+                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <button onClick={() => handleDownloadCV(candidate.file)} className="text-blue-600 hover:text-blue-800">Télécharger CV</button>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <button onClick={() => handleAccept(candidate.id)} className="text-green-600 hover:text-green-800 mr-3">Accepter</button>
                                     <button onClick={() => handleRefuse(candidate.id)} className="text-red-600 hover:text-red-800">Refuser</button>
