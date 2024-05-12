@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { FaEdit, FaTrashAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import UserFormModal from './user-form-modal';  // This is your modal component for adding/editing users
-
+import axiosInstance from '../../../../axios-instance';
+    import UserDetailsModal from './UserDetailsModal'; 
 const GestionUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,15 +16,13 @@ const GestionUsers = () => {
     const token = useSelector(state => state.auth.user.access_token);
 
     useEffect(() => {
-        fetchUsers();
-    }, [token]);
+        //fetchUsers();
+    }, []);
 
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8080/users', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.get('http://localhost:8080/users');
             setUsers(response.data);
         } catch (error) {
             console.error("Failed to fetch users:", error);
@@ -36,9 +34,7 @@ const GestionUsers = () => {
 
     const deleteUser = async (userId) => {
         try {
-            await axios.delete(`http://localhost:8080/user/delete/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await axiosInstance.delete(`http://localhost:8080/user/delete/${userId}`);
             fetchUsers();
             toast.success('Utilisateur supprimé avec succès');
         } catch (err) {
@@ -46,7 +42,7 @@ const GestionUsers = () => {
             toast.error('Échec de la suppression de l’utilisateur');
         }
     };
-
+  
     const handleAddOrEditUser = (user) => {
         setSelectedUser(user);
         setEditMode(user !== null);
@@ -59,8 +55,6 @@ const GestionUsers = () => {
         setEditMode(false);
     };
 
-    if (loading) return <div>Loading users...</div>;
-    if (error) return <div>{error}</div>;
 
     return (
         <div className="p-4">
@@ -92,7 +86,8 @@ const GestionUsers = () => {
                                         {user.enabled ? 'Actif' : 'Inactif'} {user.enabled ? <FaCheckCircle /> : <FaTimesCircle />}
                                     </div>
                                 </td>
-                                <td className="py-4 px-6">
+                                <td className="py-4 px-6 space-x-4">
+                             
                                     <button onClick={() => handleAddOrEditUser(user)} className="text-blue-500 hover:text-blue-700">
                                         <FaEdit className="inline mr-2" />Modifier
                                     </button>
@@ -114,6 +109,7 @@ const GestionUsers = () => {
                     editMode={editMode}
                 />
             )}
+          
         </div>
     );
 };

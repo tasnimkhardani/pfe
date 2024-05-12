@@ -15,6 +15,7 @@ import Sujet from "./pages/Sujet/sujet";
 import Candidat from "./pages/Admin/Components/candidat";
 import StagiairesAcceptes from "./pages/Admin/Components/stagaire";
 import Stage from "./pages/Encadrant/Components/stage";
+import StagePage from "./pages/stage/stage"
 function App() {
   const router = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ function App() {
       children: [
         { path: "/", element: <Home /> },
         { path: "login", element: <Login /> },
-        { path: "register", element: <Register /> }, 
+        { path: "register", element: <Register /> },
         {
           path: "admin",
           element: <ProtectedRoute roleRequired="ADMIN" />,
@@ -42,7 +43,7 @@ function App() {
         },
         {
           path: "etudiant",
-          //element: <ProtectedRoute roleRequired="CANDIDAT" />,
+          element: <ProtectedRoute roleRequired="CANDIDAT" />,
           children: [
             {
               path: "",
@@ -60,7 +61,8 @@ function App() {
             { path: "stage/:id", element: <Stage />}
           ],
         },
-        { path:"sujet/:id", element: <Sujet />}
+        { path:"sujet/:id", element: <Sujet />},
+        { path:"stage",element:<StagePage />}
       ],
     },
   ]);

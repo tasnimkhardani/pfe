@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Hero = () => {
     return (
         <section>
@@ -6,9 +8,9 @@ const Hero = () => {
                 <div className='relative z-10'>
                     <h1 className='text-4xl font-bold'>TOUJOURS À LA RECHERCHE DE PERSONNES EXCELLENTES</h1>
                     <p className='mt-4 font-semibold  shadow-xl'>Postes Ouverts</p>
-                    <a href="#learn-more" className='mt-8 inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg transform hover:-translate-y-1'>
+                    <Link to="/stage" className='mt-8 inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-lg transform hover:-translate-y-1'>
                         Chercher un stage
-                    </a>
+                    </Link>
                 </div>
             </div>
         </section>
