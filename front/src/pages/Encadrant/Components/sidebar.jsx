@@ -27,6 +27,7 @@ const Sidebar = () => {
               <span className="block text-xs capitalize font-medium">Encadrant</span>
             </div>
           </div>
+       
           <ul>
             <NavLink to="/encadrant/stage/1" className="ml-4 text-sm font-medium">
               <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">

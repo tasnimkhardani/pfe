@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import { FaEdit, FaTrashAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import UserFormModal from './user-form-modal';  // This is your modal component for adding/editing users
 import axiosInstance from '../../../../axios-instance';
-    import UserDetailsModal from './UserDetailsModal'; 
 const GestionUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);

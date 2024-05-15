@@ -58,7 +58,7 @@ function App() {
         {
           path:"encadrant", element: <Encadrant />,
           children: [
-            { path: "stage/:id", element: <Stage />}
+            { path: "stage/:id", element: <Stage />},
           ],
         },
         { path:"sujet/:id", element: <Sujet />},

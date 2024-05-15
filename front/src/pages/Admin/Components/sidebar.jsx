@@ -18,7 +18,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 h-full bg-gray-900 text-gray-200">
+    <div className="w-64  bg-gray-900 text-gray-200">
       <div className="w-60 p-5">
         <div className="flex items-center justify-between bg-gray-800 p-3 rounded-md">
           <AiOutlineUser className="text-lg text-blue-500 hover:text-blue-700 cursor-pointer" />

@@ -5,7 +5,7 @@ import CircularProgress from './circular-progress';
 const sprints = [
     {
         id: 1,
-        name: "Sprint 1",
+        name: "Tache 1",
         description: "Conception initiale et configuration",
         deadline: "2024-04-01",
         validated: true,
@@ -15,7 +15,7 @@ const sprints = [
     },
     {
         id: 2,
-        name: "Sprint 2",
+        name: "Tache 2",
         description: "Développement des fonctionnalités clés",
         deadline: "2024-05-15",
         validated: false,
@@ -23,7 +23,7 @@ const sprints = [
     },
     {
         id: 3,
-        name: "Sprint 3",
+        name: "Tache 3",
         description: "Tests et débogage",
         deadline: "2024-06-05",
         validated: false,
