@@ -68,7 +68,7 @@ const UserFormModal = ({ user, onClose, onUpdate, token, editMode }) => {
                         <div key={field}>
                             <label htmlFor={field} className="block text-sm font-medium text-gray-700">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                             <input
-                                type={field === 'telephone' ? 'number' : field === 'email' ? 'email' : 'text'}
+                                type={field === 'telephone' ? 'number' : field === 'email' ? 'text' : 'text'}
                                 id={field}
                                 name={field}
                                 value={formData[field]}

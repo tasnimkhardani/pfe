@@ -15,7 +15,7 @@ const GestionUsers = () => {
     const token = useSelector(state => state.auth.user.access_token);
 
     useEffect(() => {
-        //fetchUsers();
+        fetchUsers();
     }, []);
 
     const fetchUsers = async () => {

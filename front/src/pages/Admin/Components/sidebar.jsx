@@ -18,7 +18,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64  bg-gray-900 text-gray-200">
+    <div className="w-64 min-h-screen bg-gray-900 text-gray-200">
       <div className="w-60 p-5">
         <div className="flex items-center justify-between bg-gray-800 p-3 rounded-md">
           <AiOutlineUser className="text-lg text-blue-500 hover:text-blue-700 cursor-pointer" />
@@ -26,6 +26,14 @@ const Sidebar = () => {
             <span className="block text-sm font-medium">{user.nom}</span>
           </div>
         </div>
+        <ul className="mt-6">
+          <NavLink to="/admin/dashboard" className="ml-4 text-sm font-medium">
+            <li className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+              <AiOutlineUser className="text-lg" />
+              Dashboard 
+            </li>
+          </NavLink>
+        </ul>
         <ul className="mt-6">
           <NavLink to="/admin/gestion-users" className="ml-4 text-sm font-medium">
             <li className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
