@@ -16,7 +16,7 @@ const StagiairesAcceptes = () => {
                 Toast.error('Erreur lors de la récupération des stagiaires: ' + error.message);
             });
 
-        axiosInstance.get('encadrants')
+        axiosInstance.get('user/getByRole?role=PROF_SUPERVISOR')
             .then(response => setSupervisors(response.data))
             .catch(error => {
                 console.error('Failed to fetch supervisors', error);
@@ -43,13 +43,10 @@ const StagiairesAcceptes = () => {
     };
 
     const handleSupervisorChange = (internId, supervisorId) => {
-        axiosInstance.post('candidature/encadrant', {
-            Encadrant_Id: Number(supervisorId),
-            Intern_Id: internId
-        })
+        axiosInstance.post(`candidature/encadrant?Encadrant_Id=${supervisorId}&Intern_Id=${internId}`)
         .then(() => {
             const updatedInterns = interns.map(intern =>
-                intern.id === internId ? { ...intern, supervisor: supervisors.find(s => s.id === Number(supervisorId)) } : intern
+                intern.intern.id === internId ? { ...intern, supervisor: supervisors.find(s => s.id === Number(supervisorId)) } : intern
             );
             setInterns(updatedInterns);
             Toast.success('Superviseur assigné avec succès.');

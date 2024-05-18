@@ -4,32 +4,30 @@ import Toast from 'react-hot-toast';
 import UserDetailsModal from './UserDetailsModal';
 
 const Candidat = () => {
-    const [candidates, setCandidates] = useState([
-        { id: 1, nom: 'Doe', prenom: 'John', email: 'john.doe@example.com', telephone: '1234567890', stage: 'Développement Web', file: '12345' },
-        { id: 2, nom: 'Smith', prenom: 'Jane', email: 'jane.smith@example.com', telephone: '0987654321', stage: 'Analyse de Données', file: '67890' }
-    ]);
-    const [selectedUser,setSelectedUser] = useState(null)
+    const [candidates, setCandidates] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axiosInstance.get('http://localhost:8080/candidature/all');
-    //             const transformedCandidates = response.data.map(cand => ({
-    //                 id: cand.idCandidatures,
-    //                 nom: `${cand.user.prenom} ${cand.user.nom}`,
-    //                 email: cand.user.email,
-    //                 telephone: cand.user.telephone,
-    //                 stage: cand.sujet.titre,
-    //                 file: cand.fileId
-    //             }));
-    //             setCandidates(transformedCandidates);
-    //         } catch (error) {
-    //             Toast.error('Erreur lors de la récupération des candidatures: ' + error.message);
-    //         }
-    //     };
-    //     fetchData();
-    // }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:8080/candidature/all');
+                const transformedCandidates = response.data.map(cand => ({
+                    id: cand.idCandidatures,
+                    nom: `${cand.user.prenom} ${cand.user.nom}`,
+                    email: cand.user.email,
+                    telephone: cand.user.telephone,
+                    stage: cand.sujet.titre,
+                    cvId: cand.cvId,
+                    lettreDeMotivationId: cand.lettreDeMotivationId
+                }));
+                setCandidates(transformedCandidates);
+            } catch (error) {
+                Toast.error('Erreur lors de la récupération des candidatures: ' + error.message);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleDownloadCV = async (fileId) => {
         try {
@@ -47,6 +45,7 @@ const Candidat = () => {
             Toast.error('Erreur lors du téléchargement du CV: ' + error.message);
         }
     };
+
     const handleAccept = async (id) => {
         try {
             await axiosInstance.put(`http://localhost:8080/candidature/accepter/${id}`);
@@ -87,7 +86,7 @@ const Candidat = () => {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Téléphone</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Stage</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Deltail</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Détail</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -99,11 +98,13 @@ const Candidat = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{candidate.telephone}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{candidate.stage}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button onClick={() => handleViewDetails(candidate)} className="text-blue-500 hover:text-blue-700">
+                                    <button onClick={() => handleViewDetails(candidate)} className="text-blue-500 hover:text-blue-700">
                                         Voir détail
-                                    </button>                                </td>
+                                    </button>
+                                </td>
                                 <td className="px-6 py-4 space-x-2 whitespace-nowrap text-sm text-gray-500">
-                                    
+                                    <button onClick={() => handleDownloadCV(candidate.cvId)} className="text-blue-600 hover:text-blue-800 mr-3">Télécharger CV</button>
+                                    <button onClick={() => handleDownloadCV(candidate.lettreDeMotivationId)} className="text-blue-600 hover:text-blue-800 mr-3">Télécharger Lettre de Motivation</button>
                                     <button onClick={() => handleAccept(candidate.id)} className="text-green-600 hover:text-green-800 mr-3">Accepter</button>
                                     <button onClick={() => handleRefuse(candidate.id)} className="text-red-600 hover:text-red-800">Refuser</button>
                                 </td>
@@ -117,10 +118,9 @@ const Candidat = () => {
                         onClose={handleCloseDetailsModal}
                     />
                 )}
-
             </div>
         </div>
     );
-}
+};
 
 export default Candidat;
