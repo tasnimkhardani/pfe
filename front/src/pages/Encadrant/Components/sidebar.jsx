@@ -1,14 +1,27 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/actions/authActions';
-import { DiScrum } from "react-icons/di";
-
+import { GiProgression } from "react-icons/gi";
+import axiosInstance from '../../../../axios-instance';
 const Sidebar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user.user);
+  const [myAdvancement, setMyAdvancement] = useState({});
 
+  useEffect(() => {
+    getMyAdvancement();
+  }, []);
+
+  async function getMyAdvancement() {
+    try{
+      const res = await axiosInstance.get('avancements')
+      setMyAdvancement(res.data)
+    }catch(err){  
+      console.log(err)
+    }
+  }
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -23,27 +36,24 @@ const Sidebar = () => {
           <div className="flex items-center justify-center flex-col gap-4 p-8">
             <img src="/images/user.jpg" alt="user" className='h-16 w-16 rounded-full' />
             <div className='text-center'>
-              <span className="block text-2xl capitalize font-bold">Samir</span>
+              <span className="block text-2xl capitalize font-bold">{user.nom}</span>
               <span className="block text-xs capitalize font-medium">Encadrant</span>
             </div>
           </div>
-       
-          <ul>
-            <NavLink to="/encadrant/stage/1" className="ml-4 text-sm font-medium">
-              <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
-                <DiScrum className="text-lg" />
-                Stage Mern
-              </li>
-            </NavLink>
-          </ul>
-          <ul>
-            <NavLink to="/encadrant/stage/2" className="ml-4 text-sm font-medium">
-              <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
-                <DiScrum className="text-lg" />
-                Stage Devops
-              </li>
-            </NavLink>
-          </ul>
+    
+          {myAdvancement.length > 0 && (
+            <ul>
+              {myAdvancement.map((advancement) => (
+                <NavLink key={advancement.id} to={`/encadrant/stage/${advancement.id}`} className="ml-4 text-sm font-medium">
+                  <li className="flex items-center gap-1 text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+                    <GiProgression className="text-lg" />
+                    {advancement.sujet}
+                  </li>
+                </NavLink>
+              ))}
+            </ul>
+          )}
+
         </div>
         <div>
           <Link to="/" onClick={handleLogout} className="flex items-center justify-start text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md w-full">

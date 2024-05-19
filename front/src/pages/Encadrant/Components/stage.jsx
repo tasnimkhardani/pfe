@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TaskCard } from './task-card';
+import { useParams } from "react-router-dom";
 
+import axiosInstance from '../../../../axios-instance';
 const initialTasksData = [
     { id: 1, name: "Task 1", description: "Analyse des exigences", comments: ['comment 1', 'comment 2'], validated: false },
     { id: 2, name: "Task 2", description: "Maquette initiale", comments: [], validated: false },
@@ -11,7 +13,21 @@ const initialTasksData = [
 ];
 
 const Stage = () => {
-    const [tasks, setTasks] = useState(initialTasksData);
+    const [tasks, setTasks] = useState([]);
+    const { id } = useParams();
+
+    useEffect(() => {
+        getMyAdvancement();
+    }, [id]);
+
+   async function getMyAdvancement(){
+        try{
+            const response = await axiosInstance.get(`task/getAll/${id}`)
+            setTasks(response.data) 
+        }catch(err){
+            console.log(err)
+        }
+    }
 
     const handleAddComment = (id, newComment) => {
         setTasks(prevTasks => prevTasks.map(task => {
