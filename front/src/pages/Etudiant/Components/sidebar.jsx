@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useEffect , useState} from 'react';
 import { AiOutlineUser, AiOutlineLogout, AiFillFile } from 'react-icons/ai';
 import { Link } from 'react-router-dom'; // Correcting import for Link
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/actions/authActions';
 import { NavLink } from 'react-router-dom';
 import { GiProgression } from "react-icons/gi";
+import axiosInstance from '../../../../axios-instance'
 
 const Sidebar = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user.user);
+  const [myAdvancement, setMyAdvancement] = useState({});
 
-  //need to fetch my advancement and show the name of sujet also condistion if it intern
+  useEffect(() => {
+    getMyAdvancement();
+  }, []);
+
+  async function getMyAdvancement() {
+    try{
+      const res = await axiosInstance.get('my-avancement')
+      setMyAdvancement(res.data)
+    }catch(err){  
+      console.log(err)
+    }
+  }
  
   const handleLogout = () => {
     dispatch(logout());
@@ -36,12 +49,14 @@ const Sidebar = () => {
 
 
         <ul className="mt-6">
-          <NavLink to="/etudiant" className="ml-4 text-sm font-medium">
-            <li className="flex items-center gap-1  text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
-              <GiProgression className="text-lg" />
-              Avancement
-            </li>
-          </NavLink>
+          {myAdvancement.sujet && (
+            <NavLink to="/etudiant" className="ml-4 text-sm font-medium">
+              <li className="flex items-center gap-1  text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-md">
+                <GiProgression className="text-lg" />
+                {myAdvancement.sujet}
+              </li>
+            </NavLink>
+          )}
         </ul>
 
 

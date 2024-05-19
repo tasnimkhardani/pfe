@@ -1,45 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrashAlt, FaCheckCircle, FaPaperclip } from 'react-icons/fa';
-
-import CircularProgress from './circular-progress';
-const sprints = [
-    {
-        id: 1,
-        name: "Tache 1",
-        description: "Conception initiale et configuration",
-        deadline: "2024-04-01",
-        validated: true,
-        tasks: ["Analyse des exigences", "Maquette initiale"],
-        feedback: "Bon travail sur les tâches initiales! Votre conception de base est solide.",
-        progress: 100
-    },
-    {
-        id: 2,
-        name: "Tache 2",
-        description: "Développement des fonctionnalités clés",
-        deadline: "2024-05-15",
-        validated: false,
-        progress: 60
-    },
-    {
-        id: 3,
-        name: "Tache 3",
-        description: "Tests et débogage",
-        deadline: "2024-06-05",
-        validated: false,
-        progress: 0
-    },
-];
+import axiosInstance from '../../../../axios-instance';
 
 const Avancement = () => {
+    const [tache, setTache] = useState([]);
+    const [comments, setComments] = useState({});
     const [progressUpdates, setProgressUpdates] = useState({});
-    const [submittedUpdates, setSubmittedUpdates] = useState({});
     const [fileAttachments, setFileAttachments] = useState({});
+    const [showModal, setShowModal] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [taskId, setTaskId] = useState(null);
+    const [newTask, setNewTask] = useState({
+        name: '',
+        description: '',
+        deadline: ''
+    });
+    const [editCommentModal, setEditCommentModal] = useState(false);
+    const [editComment, setEditComment] = useState({
+        id: null,
+        content: '',
+        tacheID: null
+    });
 
     useEffect(() => {
-        const initialFiles = sprints.reduce((acc, sprint) => ({ ...acc, [sprint.id]: [] }), {});
-        setFileAttachments(initialFiles);
+        const fetchTasks = async () => {
+            try {
+                const response = await axiosInstance.get('task/getMyTasks');
+                setTache(response.data);
+                response.data.forEach(async (task) => {
+                    await fetchComments(task.id);
+                });
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        };
+
+        fetchTasks();
     }, []);
+
+    const fetchComments = async (taskId) => {
+        try {
+            const response = await axiosInstance.get(`commentaire/getAll?tacheId=${taskId}`);
+            setComments(prev => ({ ...prev, [taskId]: response.data }));
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
 
     const handleProgressChange = (id, value) => {
         setProgressUpdates(prev => ({ ...prev, [id]: value }));
@@ -49,25 +55,51 @@ const Avancement = () => {
         setFileAttachments(prev => ({ ...prev, [id]: [...prev[id], ...files] }));
     };
 
-    const handleSubmit = (id) => {
-        const sprintUpdates = submittedUpdates[id] || [];
-        sprintUpdates.push({ text: progressUpdates[id], files: fileAttachments[id] });
-        setSubmittedUpdates(prev => ({ ...prev, [id]: sprintUpdates }));
-        setProgressUpdates(prev => ({ ...prev, [id]: "" }));
-        setFileAttachments(prev => ({ ...prev, [id]: [] }));
+    const handleSubmit = async (id) => {
+        const commentData = {
+            content: progressUpdates[id],
+            tacheID: id,
+            date: new Date().toISOString()
+        };
+
+        try {
+            await axiosInstance.post('commentaire/create', commentData);
+            await fetchComments(id);
+            setProgressUpdates(prev => ({ ...prev, [id]: "" }));
+            setFileAttachments(prev => ({ ...prev, [id]: [] }));
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+        }
     };
 
-    const handleDelete = (sprintId, index) => {
-        const updates = [...submittedUpdates[sprintId]];
-        updates.splice(index, 1);
-        setSubmittedUpdates(prev => ({ ...prev, [sprintId]: updates }));
+    const handleOpenEditCommentModal = (comment) => {
+        setEditComment({
+            id: comment.id,
+            content: comment.content,
+            tacheID: comment.tacheID
+        });
+        setEditCommentModal(true);
     };
 
-    const handleEdit = (sprintId, index) => {
-        const update = submittedUpdates[sprintId][index];
-        setProgressUpdates(prev => ({ ...prev, [sprintId]: update.text }));
-        setFileAttachments(prev => ({ ...prev, [sprintId]: update.files }));
-        handleDelete(sprintId, index);
+    const handleUpdateComment = async () => {
+        const { id, content, tacheID } = editComment;
+        const updatedComment = { content, date: new Date().toISOString() };
+        try {
+            await axiosInstance.put(`commentaire/update/${id}`, updatedComment);
+            await fetchComments(tacheID);
+            setEditCommentModal(false);
+        } catch (error) {
+            console.error('Error updating comment:', error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId, tacheId) => {
+        try {
+            await axiosInstance.delete(`commentaire/delete/${commentId}`);
+            await fetchComments(tacheId);
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
     };
 
     const calculateDeadlineDays = (deadline) => {
@@ -77,38 +109,86 @@ const Avancement = () => {
         return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
     };
 
+    const handleAddTask = async () => {
+        try {
+            if (isEditing) {
+                await axiosInstance.put(`task/update/${taskId}`, newTask);
+            } else {
+                await axiosInstance.post('task/create', newTask);
+            }
+            setShowModal(false);
+            setIsEditing(false);
+            setTaskId(null);
+            const response = await axiosInstance.get('task/getMyTasks');
+            setTache(response.data);
+        } catch (error) {
+            console.error('Error creating/updating task:', error);
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNewTask(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleEditTask = (task) => {
+        setNewTask({
+            name: task.name,
+            description: task.description,
+            deadline: task.deadline
+        });
+        setTaskId(task.id);
+        setIsEditing(true);
+        setShowModal(true);
+    };
+
+    const handleDeleteTask = async (id) => {
+        try {
+            await axiosInstance.delete(`task/delete/${id}`);
+            const response = await axiosInstance.get('task/getMyTasks');
+            setTache(response.data);
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
+
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Suivi de Progrès du Projet Étudiant</h1>
 
-            {sprints.map((sprint) => (
-                <div key={sprint.id} className={`p-6 border border-gray-200 rounded-lg shadow-lg mb-5 ${sprint.validated ? 'bg-green-100' : 'bg-white'}`}>
+            <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 mb-6"
+                onClick={() => setShowModal(true)}
+            >
+                Ajouter Tâche
+            </button>
+
+            {tache.map((task) => (
+                <div key={task.id} className={`p-6 border border-gray-300 rounded-lg shadow-lg mb-5 ${task.valide ? 'bg-green-100' : 'bg-white'} transition-transform transform hover:scale-105`}>
                     <div className="flex justify-between items-center mb-4">
-                    <CircularProgress progress={sprint.progress} />
-
-
-                        <h2 className="text-xl font-semibold">{sprint.name}</h2>
-                        <span className="text-sm font-medium text-gray-500">Échéance dans {calculateDeadlineDays(sprint.deadline)} jours</span>
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-xl font-semibold">{task.name}</h2>
+                            <span className="text-sm font-medium text-gray-500">Échéance dans {calculateDeadlineDays(task.deadline)} jours</span>
+                        </div>
+                        <div className='flex flex-row gap-2'>
+                            <button onClick={() => handleEditTask(task)} className='text-blue-500'>
+                                <FaEdit />
+                            </button>
+                            <button onClick={() => handleDeleteTask(task.id)} className='text-red-500'>
+                                <FaTrashAlt />
+                            </button>
+                        </div>
                     </div>
-                    <p className="text-gray-600 mb-3">{sprint.description}</p>
-                    {sprint.validated ? (
-                        <>
-                            <p className="text-green-600 font-medium">Ce sprint a été validé.</p>
-                            <p className="text-gray-700 mt-2"><span className="font-semibold">Feedback:</span> {sprint.feedback}</p>
-                            <div className="mt-4">
-                                <h4 className="font-medium text-gray-700">Tâches Affectées:</h4>
-                                <ul className="list-disc list-inside text-gray-700">
-                                    {sprint.tasks.map((task, idx) => <li key={idx}>{task}</li>)}
-                                </ul>
-                            </div>
-                        </>
+                    <p className="text-gray-600 mb-3">{task.description}</p>
+                    {task.valide ? (
+                        <p className="text-green-600 font-medium flex items-center gap-2"><FaCheckCircle /> Ce task a été validé.</p>
                     ) : (
                         <>
                             <textarea
                                 className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
                                 placeholder="Mettez à jour votre progrès..."
-                                value={progressUpdates[sprint.id] || ""}
-                                onChange={(e) => handleProgressChange(sprint.id, e.target.value)}
+                                value={progressUpdates[task.id] || ""}
+                                onChange={(e) => handleProgressChange(task.id, e.target.value)}
                             />
                             <label className="block mb-2 cursor-pointer">
                                 <span className="sr-only">Choisir le fichier</span>
@@ -121,34 +201,47 @@ const Avancement = () => {
                                                 file:text-sm file:font-semibold
                                                 file:bg-blue-50 file:text-blue-700
                                                 hover:file:bg-blue-100"
-                                    onChange={(e) => handleFileAttachment(sprint.id, Array.from(e.target.files))}
+                                    onChange={(e) => handleFileAttachment(task.id, Array.from(e.target.files))}
                                 />
                             </label>
                             <button
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
-                                onClick={() => handleSubmit(sprint.id)}
+                                onClick={() => handleSubmit(task.id)}
                             >
                                 Soumettre la mise à jour
                             </button>
                         </>
                     )}
-                    {!sprint.validated && (
+                    {comments[task.id] && comments[task.id].length > 0 && (
                         <div className="mt-4">
-                            <h4 className="font-medium text-gray-700">Mises à jour soumises:</h4>
-                            <ul className="space-y-2 text-gray-600">
-                                {submittedUpdates[sprint.id]?.map((update, index) => (
-                                    <li key={index} className='bg-gray-100 rounded-lg px-3 py-2 flex items-center justify-between'>
-                                        {update.text}
-                                        {update.files.map((file, idx) => <FaPaperclip key={idx} className="ml-2" title={file.name} />)}
+                            <h4 className="font-medium text-gray-700">Commentaires:</h4>
+                            <ul className="list-disc list-inside text-gray-700">
+                                {comments[task.id].map((comment) => (
+                                    <li key={comment.id} className="flex justify-between items-start mb-2">
+                                        <div className=' w-full'>
+                                            <div className="flex justify-between gap-2">
+                                                <p className='text-sm font-bold text-gray-700 capitalize'> {comment.auteurName}</p>
+                                                <div className='flex gap-2'>
 
-                                        <div className='flex gap-2'>
-                                            <button onClick={() => handleEdit(sprint.id, index)} className='text-blue-500'>
-                                                <FaEdit />
-                                            </button>
-                                            <button onClick={() => handleDelete(sprint.id, index)} className='text-red-500'>
-                                                <FaTrashAlt />
-                                            </button>
+                                                    <button
+                                                        onClick={() => handleOpenEditCommentModal(comment)}
+                                                        className="text-blue-500"
+                                                    >
+                                                        <FaEdit />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteComment(comment.id, task.id)}
+                                                        className="text-red-500"
+                                                    >
+                                                        <FaTrashAlt />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <hr className='' />
+                                            <p className="text-gray-600">{comment.content}</p>
+                                            <p className="text-sm text-gray-500">{new Date(comment.date).toLocaleString()}</p>
                                         </div>
+
 
                                     </li>
                                 ))}
@@ -157,6 +250,120 @@ const Avancement = () => {
                     )}
                 </div>
             ))}
+
+            {showModal && (
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                        <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                            {isEditing ? 'Modifier Tâche' : 'Ajouter une Nouvelle Tâche'}
+                                        </h3>
+                                        <div className="mt-2">
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                placeholder="Nom de la tâche"
+                                                value={newTask.name}
+                                                onChange={handleChange}
+                                                className="w-full p-2 border border-gray-300 rounded mb-3"
+                                            />
+                                            <textarea
+                                                name="description"
+                                                placeholder="Description"
+                                                value={newTask.description}
+                                                onChange={handleChange}
+                                                className="w-full p-2 border border-gray-300 rounded mb-3"
+                                            />
+                                            <input
+                                                type="datetime-local"
+                                                name="deadline"
+                                                value={newTask.deadline}
+                                                onChange={handleChange}
+                                                className="w-full p-2 border border-gray-300 rounded"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={handleAddTask}
+                                >
+                                    {isEditing ? 'Modifier' : 'Ajouter'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setIsEditing(false);
+                                        setTaskId(null);
+                                        setNewTask({ name: '', description: '', deadline: '' });
+                                    }}
+                                >
+                                    Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {editCommentModal && (
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className=" w-full mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                        <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                            Modifier Commentaire
+                                        </h3>
+                                        <div className="mt-2 w-full ">
+                                            <textarea
+                                                name="content"
+                                                placeholder="Commentaire"
+                                                value={editComment.content}
+                                                onChange={(e) => setEditComment(prev => ({ ...prev, content: e.target.value }))}
+                                                className="w-full p-2 border border-gray-300 rounded mb-3"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={handleUpdateComment}
+                                >
+                                    Modifier
+                                </button>
+                                <button
+                                    type="button"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={() => setEditCommentModal(false)}
+                                >
+                                    Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

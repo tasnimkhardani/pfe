@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
     }
 });
 
-// Optionally add interceptors for requests or responses here
 axiosInstance.interceptors.request.use(
     config => {
         const userString = localStorage.getItem('user') || '{}'; 

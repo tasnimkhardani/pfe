@@ -12,13 +12,17 @@ const Header = () => {
         if (user) {
             switch (user.role) {
                 case 'ADMIN':
-                    navigate('/admin/dashboard');
-                    break;
-                case 'CANDIDAT':
-                    navigate('/etudiant/dashboard');
-                    break;
-                default:
-                    navigate('/');
+                        navigate('/admin/dashboard');
+                        break;
+                    case 'CANDIDAT':
+                        navigate('/etudiant/dashboard');
+                        break;
+                    case 'INTERN':
+                        navigate('/etudiant/dashboard');
+                        break;
+                    case 'PROF_SUPERVISOR':
+                        navigate('/encadrant');
+                        break;
             }
         }
     };
