@@ -11,7 +11,8 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user.user);
 
-
+  //need to fetch my advancement and show the name of sujet also condistion if it intern
+ 
   const handleLogout = () => {
     dispatch(logout());
   };

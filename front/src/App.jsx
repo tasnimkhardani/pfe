@@ -15,7 +15,8 @@ import Sujet from "./pages/Sujet/sujet";
 import Candidat from "./pages/Admin/Components/candidat";
 import StagiairesAcceptes from "./pages/Admin/Components/stagaire";
 import Stage from "./pages/Encadrant/Components/stage";
-import StagePage from "./pages/stage/stage"
+import StagePage from "./pages/stage/stage";
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -26,24 +27,24 @@ function App() {
         { path: "register", element: <Register /> },
         {
           path: "admin",
-          element: <ProtectedRoute roleRequired="ADMIN" />,
+          element: <ProtectedRoute rolesRequired={["ADMIN"]} />,
           children: [
             {
               path: "",
               element: <Admin />,
               children: [
                 { path: "dashboard", element: <AdminDashboard /> },
-                { path: "gestion-users", element: <GestionUsers />},
-                { path: "gestion-sujet", element: <GestionSujet />},
+                { path: "gestion-users", element: <GestionUsers /> },
+                { path: "gestion-sujet", element: <GestionSujet /> },
                 { path: "candidats", element: <Candidat /> },
-                { path: "stagaire", element: <StagiairesAcceptes />}
+                { path: "stagaire", element: <StagiairesAcceptes /> }
               ],
             }
           ],
         },
         {
           path: "etudiant",
-          element: <ProtectedRoute roleRequired="CANDIDAT" />,
+          element: <ProtectedRoute rolesRequired={["CANDIDAT", "INTERN"]} />,
           children: [
             {
               path: "",
@@ -56,21 +57,23 @@ function App() {
           ],
         },
         {
-          path:"encadrant", element: <Encadrant />,
+          path: "encadrant",
+          element: <Encadrant />,
           children: [
-            { path: "stage/:id", element: <Stage />},
+            { path: "stage/:id", element: <Stage /> },
           ],
         },
-        { path:"sujet/:id", element: <Sujet />},
-        { path:"stage",element:<StagePage />}
+        { path: "sujet/:id", element: <Sujet /> },
+        { path: "stage", element: <StagePage /> }
       ],
     },
   ]);
+
   return (
     <>
       <RouterProvider router={router} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
