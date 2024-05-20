@@ -1,51 +1,53 @@
 import React, { useState } from 'react';
-export const TaskCard = ({ task, onAddComment, onValidateToggle }) => {
-    const [comment, setComment] = useState("");
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
-    const handleAddComment = () => {
-        if (comment.trim() === "") {
-            alert("Le commentaire ne peut pas être vide.");
-            return;
-        }
-        onAddComment(task.id, comment);
-        setComment("");
+export const TaskCard = ({ task, comments, onAddComment, onValidateToggle }) => {
+    const [newComment, setNewComment] = useState("");
+
+    const handleCommentChange = (e) => {
+        setNewComment(e.target.value);
     };
 
-    // Make sure comments is always treated as an array
-    const safeComments = Array.isArray(task.comments) ? task.comments : [];
+    const handleAddComment = () => {
+        onAddComment(task.id, newComment);
+        setNewComment("");
+    };
 
     return (
-        <div className="p-6 border rounded-lg shadow-lg bg-white">
-            <h2 className="text-2xl font-semibold mb-2">{task.name}</h2>
-            <p className="text-gray-600 mb-4">{task.description}</p>
-            <hr />
-            <div>
-                <span className="font-semibold">Commentaires:</span>
-                {safeComments.length > 0 ? safeComments.map((c, index) => (
-                    <p key={index}>{c}</p>
-                )) : "Aucun commentaire"}
+        <div className={`p-6 border border-gray-300 rounded-lg shadow-lg mb-5 ${task.validated ? 'bg-green-100' : 'bg-white'}`}>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">{task.name}</h2>
+                <button onClick={() => onValidateToggle(task.id)} className={`text-${task.validated ? 'green' : 'gray'}-500`}>
+                    {task.validated ? 'Validated' : 'Validate'}
+                </button>
             </div>
-            <textarea
-                className="w-full p-3 border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 rounded-md mb-2"
-                placeholder="Ajouter un commentaire..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-            />
-            <div className='flex flex-row justify-between'>
-
-            <button 
-                className="bg-[#38A3A5] hover:bg-[#38a3a589] w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={handleAddComment}
+            <p className="text-gray-600 mb-3">{task.description}</p>
+            <div>
+                <h4 className="font-medium text-gray-700">Commentaires:</h4>
+                <ul className="list-disc list-inside text-gray-700">
+                    {comments.map((comment) => (
+                        <li key={comment.id} className="mb-2">
+                            <div className="flex justify-between gap-2">
+                                <p className='text-sm font-bold text-gray-700 capitalize'>{comment.auteurName}</p>
+                            </div>
+                            <p className="text-gray-600">{comment.content}</p>
+                            <p className="text-sm text-gray-500">{new Date(comment.date).toLocaleString()}</p>
+                        </li>
+                    ))}
+                </ul>
+                <textarea
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-2"
+                    placeholder="Ajouter un commentaire..."
+                    value={newComment}
+                    onChange={handleCommentChange}
+                />
+                <button
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+                    onClick={handleAddComment}
                 >
-                Ajouter Commentaire
-            </button>
-            <button 
-                className={`ml-4 py-2 px-4 rounded focus:outline-none ${task.validated ? 'bg-red-500 hover:bg-red-700' : 'bg-[#57CC99] hover:bg-green-700'} text-white font-bold`}
-                onClick={() => onValidateToggle(task.id)}
-                >
-                {task.validated ? 'Invalider' : 'Valider'}
-            </button>
-                </div>
+                    Ajouter Commentaire
+                </button>
+            </div>
         </div>
     );
 };
