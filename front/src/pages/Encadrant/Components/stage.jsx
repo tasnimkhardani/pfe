@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from '../../../../axios-instance';
 import { FaEdit, FaTrashAlt, FaCheckCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-
+import Toast from 'react-hot-toast';
 const Stage = () => {
     const [tasks, setTasks] = useState([]);
     const [comments, setComments] = useState({});
@@ -59,9 +59,14 @@ const Stage = () => {
             tacheID: id,
             date: new Date().toISOString()
         };
+        if (commentData.content === "") {
+            Toast.error('Veuillez remplir le champ commentaire')
+            return;
+        }
 
         try {
             await axiosInstance.post('commentaire/create', commentData);
+            Toast.success('Commentaire ajouté avec succès');
             await fetchComments(id);
             setProgressUpdates(prev => ({ ...prev, [id]: "" }));
             setFileAttachments(prev => ({ ...prev, [id]: [] }));
@@ -102,7 +107,7 @@ const Stage = () => {
 
     const onValidateToggle = async (taskId) => {
         const task = tasks.find(t => t.id === taskId);
-        const newValidStatus = !task.valide;
+        const newValidStatus = true
 
         try {
             await axiosInstance.put(`task/valide/${taskId}/${newValidStatus}`);
@@ -132,47 +137,45 @@ const Stage = () => {
                             </div>
                         </div>
                         <p className="text-gray-600 mb-3">{task.description}</p>
-                        {task.validated ? (
-                            <p className="text-green-600 font-medium flex items-center gap-2"><FaCheckCircle /> Ce task a été validé.</p>
-                        ) : (
-                            <>
-                                <textarea
-                                    className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
-                                    placeholder="Mettez à jour votre progrès..."
-                                    value={progressUpdates[task.id] || ""}
-                                    onChange={(e) => handleProgressChange(task.id, e.target.value)}
-                                />
-                                <label className="block mb-2 cursor-pointer">
-                                    <span className="sr-only">Choisir le fichier</span>
-                                    <input
-                                        type="file"
-                                        multiple
-                                        className="block w-full text-sm text-gray-500
+
+                        <>
+                            <textarea
+                                className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                                placeholder="Mettez à jour votre progrès..."
+                                value={progressUpdates[task.id] || ""}
+                                onChange={(e) => handleProgressChange(task.id, e.target.value)}
+                            />
+                            <label className="block mb-2 cursor-pointer">
+                                <span className="sr-only">Choisir le fichier</span>
+                                <input
+                                    type="file"
+                                    multiple
+                                    className="block w-full text-sm text-gray-500
                                                 file:mr-4 file:py-2 file:px-4
                                                 file:rounded-full file:border-0
                                                 file:text-sm file:font-semibold
                                                 file:bg-blue-50 file:text-blue-700
                                                 hover:file:bg-blue-100"
-                                        onChange={(e) => handleFileAttachment(task.id, Array.from(e.target.files))}
-                                    />
-                                </label>
-                                <div className='flex flex-row justify-between'>
-                                    <button
-                                        className="bg-[#38A3A5] hover:bg-[#38a3a589] w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                        onClick={() => handleSubmit(task.id)}
-                                    >
-                                        Ajouter Commentaire
-                                    </button>
-                                    <button
-                                        className={`ml-4 py-2 px-4 rounded focus:outline-none ${task.valide ? 'bg-red-500 hover:bg-red-700' : 'bg-[#57CC99] hover:bg-green-700'} text-white font-bold`}
-                                        onClick={() => onValidateToggle(task.id)}
-                                    >
-                                        {task.valide ? 'Invalider' : 'Valider'}
-                                     
-                                    </button>
-                                </div>
-                            </>
-                        )}
+                                    onChange={(e) => handleFileAttachment(task.id, Array.from(e.target.files))}
+                                />
+                            </label>
+                            <div className='flex flex-row justify-between'>
+                                <button
+                                    className="bg-[#38A3A5] hover:bg-[#38a3a589] w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    onClick={() => handleSubmit(task.id)}
+                                >
+                                    Ajouter Commentaire
+                                </button>
+                                <button
+                                    className={`ml-4 py-2 px-4 rounded focus:outline-none ${task.valide ? 'bg-red-500 hover:bg-red-700' : 'bg-[#57CC99] hover:bg-green-700'} text-white font-bold`}
+                                    onClick={() => onValidateToggle(task.id)}
+                                >
+                                    {task.valide ? 'Invalider' : 'Valider'}
+
+                                </button>
+                            </div>
+                        </>
+
                         {comments[task.id] && comments[task.id].length > 0 && (
                             <div className="mt-4">
                                 <h4 className="font-medium text-gray-700">Commentaires:</h4>
@@ -211,6 +214,7 @@ const Stage = () => {
                     </div>
                 ))}
             </section>
+        
             {editCommentModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
