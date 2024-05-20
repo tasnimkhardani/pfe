@@ -152,6 +152,10 @@ const Avancement = () => {
         }
     };
 
+    const handleCancel = () => {
+        setProgressUpdates({});
+    }
+
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Suivi de Progrès du Projet Étudiant</h1>
@@ -204,12 +208,21 @@ const Avancement = () => {
                                     onChange={(e) => handleFileAttachment(task.id, Array.from(e.target.files))}
                                 />
                             </label>
-                            <button
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
-                                onClick={() => handleSubmit(task.id)}
-                            >
-                                Soumettre la mise à jour
-                            </button>
+                            <div className="flex flex-row justify-between gap-4 py-2 rounded-md">
+                                <button
+                                    className="bg-blue-600 hover:bg-blue-700  w-full text-white font-bold py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
+                                    onClick={() => handleSubmit(task.id)}
+                                >
+                                    Soumettre la mise à jour
+                                </button>
+                                <button
+                                    className="bg-red-600 hover:bg-red-700  text-white font-bold py-2 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
+                                    onClick={() => handleCancel()}
+                                >
+                                    Annuler
+                                </button>
+                            </div>
+
                         </>
                     )}
                     {comments[task.id] && comments[task.id].length > 0 && (
