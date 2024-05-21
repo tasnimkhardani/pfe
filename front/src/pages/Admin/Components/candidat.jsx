@@ -103,8 +103,6 @@ const Candidat = () => {
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 space-x-2 whitespace-nowrap text-sm text-gray-500">
-                                    <button onClick={() => handleDownloadCV(candidate.cvId)} className="text-blue-600 hover:text-blue-800 mr-3">Télécharger CV</button>
-                                    <button onClick={() => handleDownloadCV(candidate.lettreDeMotivationId)} className="text-blue-600 hover:text-blue-800 mr-3">Télécharger Lettre de Motivation</button>
                                     <button onClick={() => handleAccept(candidate.id)} className="text-green-600 hover:text-green-800 mr-3">Accepter</button>
                                     <button onClick={() => handleRefuse(candidate.id)} className="text-red-600 hover:text-red-800">Refuser</button>
                                 </td>
@@ -116,6 +114,8 @@ const Candidat = () => {
                     <UserDetailsModal
                         user={selectedUser}
                         onClose={handleCloseDetailsModal}
+                        onDownloadCV={handleDownloadCV}
+                        onDownloadLetter={handleDownloadCV}
                     />
                 )}
             </div>
