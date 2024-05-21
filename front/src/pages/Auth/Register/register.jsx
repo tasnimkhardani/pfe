@@ -138,7 +138,7 @@ const Register = () => {
                     >
                         <option value="">Sélectionner un rôle</option>
                         <option value="candidat">CANDIDAT</option>
-                        <option value="supervisor">SUPERVISOR</option>
+                        <option value="PROF_SUPERVISOR">PROF_SUPERVISOR</option>
                     </select>
                     {errors.role && <div className="text-red-500 text-sm">{errors.role}</div>}
                     <button 
