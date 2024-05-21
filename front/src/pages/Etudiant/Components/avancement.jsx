@@ -213,7 +213,7 @@ const Avancement = () => {
                                     className="bg-blue-600 hover:bg-blue-700  w-full text-white font-bold py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
                                     onClick={() => handleSubmit(task.id)}
                                 >
-                                    Soumettre la mise à jour
+                                    Soumettre 
                                 </button>
                                 <button
                                     className="bg-red-600 hover:bg-red-700  text-white font-bold py-2 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"

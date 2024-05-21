@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import axiosInstance from '../../../../axios-instance';
+
 const SujetFormModal = ({ sujet, closeModal, setSujets, editMode, token }) => {
     const [titre, setTitre] = useState('');
     const [description, setDescription] = useState('');
+    const [categorie, setCategorie] = useState('');
 
     useEffect(() => {
         if (editMode && sujet) {
             setTitre(sujet.titre);
             setDescription(sujet.description);
+            setCategorie(sujet.categorie);
         }
     }, [sujet, editMode]);
 
@@ -22,7 +25,8 @@ const SujetFormModal = ({ sujet, closeModal, setSujets, editMode, token }) => {
                 url: url,
                 data: {
                     titre,
-                    description
+                    description,
+                    categorie
                 }
             });
             if (editMode) {
@@ -57,6 +61,15 @@ const SujetFormModal = ({ sujet, closeModal, setSujets, editMode, token }) => {
                         id="description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                        required
+                    />
+                    <label htmlFor="categorie" className="block text-sm font-medium text-gray-700">Catégorie</label>
+                    <input
+                        type="text"
+                        id="categorie"
+                        value={categorie}
+                        onChange={(e) => setCategorie(e.target.value)}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                         required
                     />

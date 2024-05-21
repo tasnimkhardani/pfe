@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,6 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import axiosInstance from '../../../../axios-instance';
 
 ChartJS.register(
   CategoryScale,
@@ -57,24 +58,45 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+export const BarChart: React.FC = () => {
+  const [data, setData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Mois',
+        data: [],
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  });
 
-// Generate random data
-const generateRandomData = () => {
-  return labels.map(() => Math.floor(Math.random() * 40));
-};
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get('candidatures/monthly');
+        const rawData = response.data;
+        const labels = Object.keys(rawData);
+        const values = Object.values(rawData);
+        
+        setData({
+          labels,
+          datasets: [
+            {
+              label: 'Candidatures',
+              data: values,
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('There was an error fetching the data!', error);
+      }
+    };
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Mois',
-      data: generateRandomData(),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+    fetchData();
+  }, []);
 
-export function BarChart() {
   return <Bar options={options} data={data} />;
-}
+};
+
+export default BarChart;

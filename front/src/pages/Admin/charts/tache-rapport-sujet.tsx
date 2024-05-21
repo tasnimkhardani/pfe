@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,6 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import axiosInstance from '../../../../axios-instance';
 
 ChartJS.register(
   CategoryScale,
@@ -27,7 +28,7 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Total de taches effectue par sujet ',
+      text: 'Nombre de tâches par sujet',
     },
   },
   scales: {
@@ -35,13 +36,18 @@ export const options = {
       beginAtZero: true, 
       title: {
         display: true, 
-        text: 'Nombre de tache ', 
+        text: 'Nombre de tâches', 
+        color: '#666', 
+        font: {
+          size: 14, 
+          weight: 'bold', 
+        },
       },
     },
     x: {
       title: {
         display: true,
-        text: 'Nom de tache',
+        text: 'Sujet',
         color: '#666',
         font: {
           size: 14,
@@ -52,24 +58,32 @@ export const options = {
   },
 };
 
-const labels = ['Tache 1', 'Tache 2', 'Tache 3', 'Tache 4'];
-
-// Generate random data
-const generateRandomData = () => {
-  return labels.map(() => Math.floor(Math.random() * 10));
-};
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Mois',
-      data: generateRandomData(),
-      backgroundColor: 'rgba(53, 100, 235, 0.5)',
-    },
-  ],
-};
-
 export function TacheRapportSujet() {
-  return <Bar options={options} data={data} />;
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get('/sujet/countByCategorie');
+        const data = response.data;
+        const labels = Object.keys(data);
+        const dataset = {
+          label: 'Nombre de tâches',
+          data: Object.values(data),
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        };
+        
+        setChartData({
+          labels: labels,
+          datasets: [dataset],
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return <Bar options={options} data={chartData} />;
 }
