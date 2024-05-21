@@ -104,8 +104,8 @@ export default function GestionSujet() {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {filteredSujets.map((sujet) => (
                             <tr key={sujet.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{sujet.titre}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sujet.description}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-balance">{sujet.titre}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-balance">{sujet.description}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sujet.categorie}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onClick={() => handleAddOrEdit(sujet)} className="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</button>
